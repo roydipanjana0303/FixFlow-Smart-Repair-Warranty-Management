@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Products | FixFlow{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">MY DEVICES</span>
+                <h1>My Products 📦</h1>
+                <p>
+                    Manage your registered devices,
+                    invoices, and warranty information.
+                </p>
+            </div>
+
+            <a href="{% url 'add_product' %}"
+               class="btn btn-primary">
+                + Add New Product
+            </a>
+        </div>
+
+        <div class="product-summary-grid">
+            <div class="product-summary-card">
+                <span class="summary-icon lavender">📦</span>
+                <div>
+                    <h2>{{ total_products }}</h2>
+                    <p>Total Products</p>
+                </div>
+            </div>
+
+            <div class="product-summary-card">
+                <span class="summary-icon mint">🛡️</span>
+                <div>
+                    <h2>{{ active_count }}</h2>
+                    <p>Within Warranty Period</p>
+                </div>
+            </div>
+
+            <div class="product-summary-card">
+                <span class="summary-icon peach">⌛</span>
+                <div>
+                    <h2>{{ expired_count }}</h2>
+                    <p>Outside Warranty Period</p>
+                </div>
+            </div>
+        </div>
+
+        {% if products %}
+        <div class="registered-products-grid">
+
+            {% for product in products %}
+            <article class="registered-product-card">
+
+                <div class="registered-product-top">
+                    <span class="device-emoji">
+                        {% if product.category == "laptop" %}
+                            💻
+                        {% elif product.category == "mobile" %}
+                            📱
+                        {% elif product.category == "tv" %}
+                            📺
+                        {% elif product.category == "ac" %}
+                            ❄️
+                        {% elif product.category == "refrigerator" %}
+                            🧊
+                        {% elif product.category == "washing_machine" %}
+                            🧺
+                        {% else %}
+                            📦
+                        {% endif %}
+                    </span>
+
+                    {% if product.is_under_warranty %}
+                        <span class="warranty-pill valid">
+                            ● In Period
+                        </span>
+                    {% else %}
+                        <span class="warranty-pill expired">
+                            ● Not Active
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h3>{{ product.product_name }}</h3>
+                <p class="product-brand">
+                    {{ product.brand }} ·
+                    {{ product.get_category_display }}
+                </p>
+
+                <div class="registered-product-meta">
+                    <div>
+                        <span>Serial Number</span>
+                        <strong>{{ product.serial_number }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Purchase Date</span>
+                        <strong>
+                            {{ product.purchase_date|date:"d M Y" }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Warranty Until</span>
+                        <strong>
+                            {{ product.warranty_expiry|date:"d M Y" }}
+                        </strong>
+                    </div>
+                </div>
+
+                <a href="{% url 'product_detail' product.pk %}"
+                   class="btn btn-outline product-view-button">
+                    View Details →
+                </a>
+
+            </article>
+            {% endfor %}
+
+        </div>
+        {% else %}
+        <div class="products-empty-state">
+            <div class="products-empty-illustration">📦</div>
+            <h2>No products registered yet</h2>
+            <p>
+                Register your first device to organize
+                purchase details and track warranty dates.
+            </p>
+
+            <a href="{% url 'add_product' %}"
+               class="btn btn-primary btn-large">
+                + Register Your First Product
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

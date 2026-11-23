@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/technician.css' %}">
+
+<div class="tech-page">
+
+    <a class="tech-back" href="{% url 'technicians:dashboard' %}">
+        ← Back to Technician Dashboard
+    </a>
+
+    <div class="tech-hero">
+        <div>
+            <span class="tech-eyebrow">REPAIR MANAGEMENT</span>
+            <h1>Repair Ticket #{{ ticket.id }}</h1>
+            <p>
+                {{ ticket.product.product_name }}
+                · {{ ticket.product.brand }}
+            </p>
+        </div>
+        <div class="tech-hero-badge">
+            <span>Current Status</span>
+            <strong>{{ ticket.get_status_display }}</strong>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="tech-alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="tech-detail-grid">
+
+        <section class="tech-panel">
+            <h2>Repair Information</h2>
+
+            <div class="tech-info-row">
+                <span>Product</span>
+                <strong>{{ ticket.product.product_name }}</strong>
+            </div>
+
+            <div class="tech-info-row">
+                <span>Brand</span>
+                <strong>{{ ticket.product.brand }}</strong>
+            </div>
+
+            <div class="tech-info-row">
+                <span>Serial Number</span>
+                <strong>{{ ticket.product.serial_number }}</strong>
+            </div>
+
+            <div class="tech-info-row">
+                <span>Priority</span>
+                <strong>{{ ticket.get_priority_display }}</strong>
+            </div>
+
+            <div class="tech-info-row">
+                <span>Warranty Status</span>
+                <strong>
+                    {{ ticket.get_warranty_status_display }}
+                </strong>
+            </div>
+
+            <div class="tech-info-row">
+                <span>Customer</span>
+                <strong>{{ ticket.customer.username }}</strong>
+            </div>
+
+            <h3>Reported Issue</h3>
+            <p class="tech-issue">
+                {{ ticket.issue_description }}
+            </p>
+        </section>
+
+        <section class="tech-panel">
+            <h2>Update Repair Progress</h2>
+            <p class="tech-muted">
+                Record the work performed and update the ticket.
+            </p>
+
+            {% if ticket.status == "completed" %}
+                <div class="tech-complete">
+                    <strong>Repair Completed</strong>
+                    <p>
+                        This repair has been completed.
+                        No further changes are allowed.
+                    </p>
+                </div>
+            {% else %}
+                <form method="post" class="tech-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="tech-alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <label for="{{ form.status.id_for_label }}">
+                        Repair Status
+                    </label>
+                    {{ form.status }}
+                    {{ form.status.errors }}
+
+                    <label for="{{ form.message.id_for_label }}">
+                        Technician Notes
+                    </label>
+                    {{ form.message }}
+                    {{ form.message.errors }}
+
+                    <button class="tech-button" type="submit">
+                        Save Repair Update
+                    </button>
+                </form>
+            {% endif %}
+        </section>
+    </div>
+
+    <section class="tech-panel">
+        <h2>Repair Progress Timeline</h2>
+        <p class="tech-muted">
+            All recorded repair updates appear below.
+        </p>
+
+        <div class="tech-timeline">
+            {% for update in updates %}
+                <div class="tech-timeline-item">
+                    <div class="tech-timeline-dot"></div>
+                    <div class="tech-timeline-content">
+                        <strong>
+                            {{ update.updated_by.username }}
+                        </strong>
+                        <small>
+                            {{ update.created_at|date:"d M Y, h:i A" }}
+                        </small>
+                        <p>{{ update.message }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="tech-muted">
+                    No repair updates have been recorded.
+                </p>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

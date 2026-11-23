@@ -1,0 +1,237 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Dashboard | FixFlow{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+
+        <div class="dashboard-welcome">
+            <div>
+                <span class="eyebrow">
+                    ✨ YOUR PERSONAL WORKSPACE
+                </span>
+                <h1>
+                    Hello,
+                    {{ user.first_name|default:user.username }}!
+                    👋
+                </h1>
+                <p>
+                    Your product, repair, and warranty overview.
+                </p>
+            </div>
+
+            <a href="{% url 'create_ticket' %}"
+               class="btn btn-primary">
+                + Request Repair
+            </a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-icon lavender">📦</span>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <h2>{{ total_products }}</h2>
+                <p>Registered Products</p>
+                <small>Devices in your account</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-icon blue">🔧</span>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <h2>{{ active_tickets }}</h2>
+                <p>Active Repairs</p>
+                <small>Open service requests</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-icon mint">✓</span>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <h2>{{ completed_tickets }}</h2>
+                <p>Completed Repairs</p>
+                <small>Resolved service requests</small>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-icon peach">🛡️</span>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <h2>{{ warranty_active }}</h2>
+                <p>Within Warranty Period</p>
+                <small>Based on registered dates</small>
+            </div>
+        </div>
+
+        <div class="dashboard-banner">
+            <div>
+                <span class="eyebrow">SMART SERVICE MANAGEMENT</span>
+                <h2>Everything your devices need.</h2>
+                <p>
+                    Register products, track warranty dates,
+                    and submit repair requests from one place.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'create_ticket' %}"
+                       class="btn btn-primary">
+                        🔧 Request Repair
+                    </a>
+
+                    <a href="{% url 'add_product' %}"
+                       class="btn btn-outline">
+                        + Add Product
+                    </a>
+
+                    <a href="{% url 'ticket_list' %}"
+                       class="btn btn-outline">
+                        My Repairs →
+                    </a>
+                </div>
+            </div>
+
+            <div class="banner-decoration">✦</div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Recent Repair Tickets</h3>
+                        <p>Your latest service requests</p>
+                    </div>
+
+                    <a href="{% url 'ticket_list' %}"
+                       class="panel-count">
+                        View All →
+                    </a>
+                </div>
+
+                {% if recent_tickets %}
+                    <div class="ticket-list">
+                        {% for ticket in recent_tickets %}
+                        <div class="ticket-item">
+                            <div class="ticket-icon">🔧</div>
+
+                            <div class="ticket-info">
+                                <strong>
+                                    {{ ticket.product.product_name }}
+                                </strong>
+                                <span>
+                                    Ticket #{{ ticket.id }}
+                                    · {{ ticket.created_at|date:"d M Y" }}
+                                </span>
+                                <small>
+                                    {{ ticket.issue_description|truncatechars:55 }}
+                                </small>
+                            </div>
+
+                            <span class="ticket-status status-{{ ticket.status }}">
+                                {{ ticket.get_status_display }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">🧰</div>
+                        <h4>No repair tickets yet</h4>
+                        <p>
+                            Submit your first repair request.
+                        </p>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'create_ticket' %}"
+                   class="btn btn-outline btn-full">
+                    + New Repair Request
+                </a>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>My Products</h3>
+                        <p>Your registered devices</p>
+                    </div>
+
+                    <a href="{% url 'product_list' %}"
+                       class="panel-count">
+                        View All →
+                    </a>
+                </div>
+
+                {% if recent_products %}
+                    <div class="product-list">
+                        {% for product in recent_products %}
+                        <div class="product-item">
+                            <div class="product-icon">📦</div>
+
+                            <div class="product-info">
+                                <strong>
+                                    {{ product.product_name }}
+                                </strong>
+                                <span>
+                                    {{ product.brand }}
+                                    · {{ product.get_category_display }}
+                                </span>
+                                <small>
+                                    Warranty until
+                                    {{ product.warranty_expiry|date:"d M Y" }}
+                                </small>
+                            </div>
+
+                            {% if product.is_under_warranty %}
+                                <span class="warranty-pill valid">
+                                    In Period
+                                </span>
+                            {% else %}
+                                <span class="warranty-pill expired">
+                                    Not Active
+                                </span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <h4>No products registered</h4>
+                        <p>
+                            Add your first product to get started.
+                        </p>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'product_list' %}"
+                   class="btn btn-outline btn-full">
+                    Manage Products →
+                </a>
+            </div>
+        </div>
+
+        <div class="next-steps">
+            <h3>What's next for FixFlow?</h3>
+            <p>
+                Phase 6 will introduce a dedicated technician
+                dashboard for managing assigned repair tickets,
+                changing repair statuses, and posting updates.
+            </p>
+
+            <div class="next-step-tags">
+                <span>👨‍🔧 Technician Workspace</span>
+                <span>📍 Service Progress Updates</span>
+                <span>✓ Repair Completion</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

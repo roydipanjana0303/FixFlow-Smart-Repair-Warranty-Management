@@ -1,0 +1,155 @@
+ 
+{% extends "base.html" %}
+
+{% block title %}Repair #{{ ticket.id }} | FixFlow{% endblock %}
+
+{% block content %}
+<section class="repair-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">
+                    REPAIR TRACKING · #{{ ticket.id }}
+                </span>
+                <h1>{{ ticket.product.product_name }}</h1>
+                <p>
+                    Submitted on
+                    {{ ticket.created_at|date:"d M Y, h:i A" }}
+                </p>
+            </div>
+
+            <a href="{% url 'ticket_list' %}"
+               class="btn btn-outline">
+                ← My Repairs
+            </a>
+        </div>
+
+        <div class="tracking-hero">
+            <div>
+                <span class="eyebrow">CURRENT STATUS</span>
+                <h2>{{ ticket.get_status_display }}</h2>
+                <p>
+                    Follow your repair request and
+                    view the latest updates below.
+                </p>
+            </div>
+
+            <span class="tracking-status status-{{ ticket.status }}">
+                ● {{ ticket.get_status_display }}
+            </span>
+        </div>
+
+        <div class="tracking-grid">
+            <div class="tracking-card">
+                <h3>Repair Information</h3>
+
+                <div class="detail-row">
+                    <span>Ticket Number</span>
+                    <strong>#{{ ticket.id }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Product</span>
+                    <strong>{{ ticket.product.product_name }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Priority</span>
+                    <strong>{{ ticket.get_priority_display }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Warranty Check</span>
+                    <strong>
+                        {{ ticket.get_warranty_status_display }}
+                    </strong>
+                </div>
+
+                <div class="repair-issue-box">
+                    <strong>Reported Issue</strong>
+                    <p>{{ ticket.issue_description }}</p>
+                </div>
+            </div>
+
+            <div class="tracking-card">
+                <h3>Technician Assignment</h3>
+
+                {% if ticket.assigned_technician %}
+                    <div class="technician-profile">
+                        <span class="technician-avatar">👨‍🔧</span>
+                        <h4>
+                            {{ ticket.assigned_technician.user.get_full_name|default:ticket.assigned_technician.user.username }}
+                        </h4>
+                        <p>
+                            {{ ticket.assigned_technician.get_specialization_display }}
+                            Specialist
+                        </p>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Experience</span>
+                        <strong>
+                            {{ ticket.assigned_technician.experience_years }}
+                            years
+                        </strong>
+                    </div>
+
+                    <div class="detail-row">
+                        <span>Assignment</span>
+                        <strong>Assigned</strong>
+                    </div>
+                {% else %}
+                    <div class="repair-empty compact">
+                        <div class="repair-empty-icon">⏳</div>
+                        <h4>Waiting for a technician</h4>
+                        <p>
+                            No matching technician is currently
+                            available. Your ticket is saved
+                            and awaiting assignment.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="tracking-card timeline-card">
+            <div class="timeline-heading">
+                <div>
+                    <h3>Repair Activity Timeline</h3>
+                    <p>
+                        Updates recorded for this repair request.
+                    </p>
+                </div>
+                <span class="panel-count">
+                    {{ updates|length }} updates
+                </span>
+            </div>
+
+            <div class="repair-timeline">
+                {% for update in updates %}
+                    <div class="timeline-entry">
+                        <div class="timeline-dot"></div>
+
+                        <div class="timeline-content">
+                            <span class="timeline-date">
+                                {{ update.created_at|date:"d M Y, h:i A" }}
+                            </span>
+                            <p>{{ update.message }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No updates available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="tracking-note">
+            Warranty status is based on registered purchase
+            information. Final repair coverage requires
+            verification by the service provider.
+        </p>
+
+    </div>
+</section>
+{% endblock %}

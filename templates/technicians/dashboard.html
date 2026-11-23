@@ -1,0 +1,151 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/technician.css' %}">
+
+<div class="tech-page">
+
+    <div class="tech-hero">
+        <div>
+            <span class="tech-eyebrow">FIXFLOW SERVICE CENTER</span>
+            <h1>Technician Workspace</h1>
+            <p>
+                Welcome, {{ request.user.username }}!
+                Manage your assigned repairs and track progress.
+            </p>
+        </div>
+
+        <div class="tech-hero-badge">
+            <span>Availability</span>
+            <strong>
+                {% if technician.is_available %}
+                    Available
+                {% else %}
+                    Unavailable
+                {% endif %}
+            </strong>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="tech-alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="tech-stats">
+        <div class="tech-stat">
+            <span>Total Assigned</span>
+            <strong>{{ counts.total }}</strong>
+            <small>All allocated tickets</small>
+        </div>
+
+        <div class="tech-stat">
+            <span>Awaiting Work</span>
+            <strong>{{ counts.assigned }}</strong>
+            <small>Ready to start</small>
+        </div>
+
+        <div class="tech-stat">
+            <span>In Progress</span>
+            <strong>{{ counts.in_progress }}</strong>
+            <small>Currently being repaired</small>
+        </div>
+
+        <div class="tech-stat">
+            <span>Completed</span>
+            <strong>{{ counts.completed }}</strong>
+            <small>Successfully finished</small>
+        </div>
+    </div>
+
+    <div class="tech-panel">
+        <div class="tech-panel-heading">
+            <div>
+                <h2>My Workload</h2>
+                <p>Your current repair capacity</p>
+            </div>
+            <strong>
+                {{ active_count }} /
+                {{ technician.max_active_tickets }}
+            </strong>
+        </div>
+
+        <div class="tech-progress-track">
+            <div
+                class="tech-progress-fill"
+                style="width: {% widthratio active_count technician.max_active_tickets 100 %}%;">
+            </div>
+        </div>
+
+        <p class="tech-muted">
+            Remaining capacity: {{ remaining_capacity }} tickets
+        </p>
+    </div>
+
+    <div class="tech-panel">
+        <div class="tech-panel-heading">
+            <div>
+                <h2>Assigned Repair Tickets</h2>
+                <p>View details and update repair progress</p>
+            </div>
+        </div>
+
+        {% if tickets %}
+        <div class="tech-table-wrap">
+            <table class="tech-table">
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Product</th>
+                        <th>Priority</th>
+                        <th>Warranty</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr>
+                        <td>#{{ ticket.id }}</td>
+                        <td>
+                            <strong>
+                                {{ ticket.product.product_name }}
+                            </strong>
+                            <small>{{ ticket.product.brand }}</small>
+                        </td>
+                        <td>{{ ticket.get_priority_display }}</td>
+                        <td>{{ ticket.get_warranty_status_display }}</td>
+                        <td>
+                            <span class="tech-status">
+                                {{ ticket.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a
+                                class="tech-button tech-button-small"
+                                href="{% url 'technicians:ticket_detail' ticket.id %}">
+                                View Repair
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="tech-empty">
+            <div class="tech-empty-icon">🛠️</div>
+            <h3>No repairs assigned yet</h3>
+            <p>
+                New repair requests will appear here when
+                they are assigned to you.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

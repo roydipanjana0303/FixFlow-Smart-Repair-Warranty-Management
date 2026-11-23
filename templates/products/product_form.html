@@ -1,0 +1,177 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Product | FixFlow{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">PRODUCT MANAGEMENT</span>
+                <h1>Register a new product</h1>
+                <p>
+                    Add your device and purchase information
+                    to start tracking its warranty.
+                </p>
+            </div>
+
+            <a href="{% url 'product_list' %}"
+               class="btn btn-outline">
+                ← My Products
+            </a>
+        </div>
+
+        <div class="product-form-layout">
+            <div class="product-form-card">
+
+                <div class="form-section-heading">
+                    <span class="section-icon">📦</span>
+                    <div>
+                        <h2>Product Information</h2>
+                        <p>Tell us about your device.</p>
+                    </div>
+                </div>
+
+                <form method="post"
+                      enctype="multipart/form-data"
+                      class="product-register-form">
+
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="form-errors">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.product_name.id_for_label }}">
+                                Product Name *
+                            </label>
+                            {{ form.product_name }}
+                            {{ form.product_name.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.brand.id_for_label }}">
+                                Brand *
+                            </label>
+                            {{ form.brand }}
+                            {{ form.brand.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.category.id_for_label }}">
+                                Category *
+                            </label>
+                            {{ form.category }}
+                            {{ form.category.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.serial_number.id_for_label }}">
+                                Serial Number *
+                            </label>
+                            {{ form.serial_number }}
+                            {{ form.serial_number.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-section-heading section-divider">
+                        <span class="section-icon">🛡️</span>
+                        <div>
+                            <h2>Warranty Details</h2>
+                            <p>Enter your purchase and coverage dates.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.purchase_date.id_for_label }}">
+                                Purchase Date *
+                            </label>
+                            {{ form.purchase_date }}
+                            {{ form.purchase_date.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.warranty_months.id_for_label }}">
+                                Warranty Duration (Months) *
+                            </label>
+                            {{ form.warranty_months }}
+                            {{ form.warranty_months.errors }}
+                        </div>
+                    </div>
+
+                    <div class="form-section-heading section-divider">
+                        <span class="section-icon">🧾</span>
+                        <div>
+                            <h2>Purchase Invoice</h2>
+                            <p>Keep your bill attached to your product.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group upload-field">
+                        <label for="{{ form.purchase_bill.id_for_label }}">
+                            Upload Purchase Bill
+                        </label>
+                        <div class="upload-box">
+                            <span class="upload-emoji">☁️</span>
+                            <strong>Choose an invoice file</strong>
+                            <p>PDF, JPG, or PNG · Maximum 5 MB</p>
+                            {{ form.purchase_bill }}
+                        </div>
+                        {{ form.purchase_bill.errors }}
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'product_list' %}"
+                           class="btn btn-outline">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            ✓ Register Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="product-help-card">
+                <div class="help-illustration">✨</div>
+                <h3>Keep your devices protected</h3>
+                <p>
+                    FixFlow calculates warranty expiry from
+                    the purchase date and warranty duration
+                    you provide.
+                </p>
+
+                <div class="help-item">
+                    <span>✓</span>
+                    Store product details
+                </div>
+                <div class="help-item">
+                    <span>✓</span>
+                    Track warranty dates
+                </div>
+                <div class="help-item">
+                    <span>✓</span>
+                    Save purchase invoices
+                </div>
+
+                <div class="help-note">
+                    Warranty dates are estimates based on
+                    your entries. Actual coverage depends
+                    on the manufacturer or seller.
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

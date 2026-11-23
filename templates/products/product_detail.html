@@ -1,0 +1,139 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{ product.product_name }} | FixFlow{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">PRODUCT DETAILS</span>
+                <h1>{{ product.product_name }}</h1>
+                <p>
+                    {{ product.brand }} ·
+                    {{ product.get_category_display }}
+                </p>
+            </div>
+
+            <a href="{% url 'product_list' %}"
+               class="btn btn-outline">
+                ← Back to Products
+            </a>
+        </div>
+
+        <div class="detail-grid">
+
+            <div class="detail-card">
+                <div class="detail-device-icon">📦</div>
+
+                <h2>Device Information</h2>
+
+                <div class="detail-row">
+                    <span>Product Name</span>
+                    <strong>{{ product.product_name }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Brand</span>
+                    <strong>{{ product.brand }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Category</span>
+                    <strong>
+                        {{ product.get_category_display }}
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Serial Number</span>
+                    <strong>{{ product.serial_number }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Registered On</span>
+                    <strong>
+                        {{ product.created_at|date:"d M Y" }}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-device-icon">🛡️</div>
+
+                <h2>Warranty Information</h2>
+
+                {% if product.is_under_warranty %}
+                    <div class="warranty-info-box warranty-good">
+                        <strong>✓ Within Warranty Period</strong>
+                        <p>
+                            Your entered warranty period
+                            has not expired.
+                        </p>
+                    </div>
+                {% else %}
+                    <div class="warranty-info-box warranty-ended">
+                        <strong>Warranty Period Not Active</strong>
+                        <p>
+                            Your entered warranty period
+                            has ended or has zero duration.
+                        </p>
+                    </div>
+                {% endif %}
+
+                <div class="detail-row">
+                    <span>Purchase Date</span>
+                    <strong>
+                        {{ product.purchase_date|date:"d M Y" }}
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Warranty Duration</span>
+                    <strong>
+                        {{ product.warranty_months }} months
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Calculated Expiry</span>
+                    <strong>
+                        {{ product.warranty_expiry|date:"d M Y" }}
+                    </strong>
+                </div>
+
+                <p class="warranty-disclaimer">
+                    This is a date-based estimate, not a
+                    manufacturer warranty verification.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="invoice-card">
+            <div>
+                <span class="section-icon">🧾</span>
+                <h2>Purchase Invoice</h2>
+                <p>
+                    Access the purchase document
+                    associated with this product.
+                </p>
+            </div>
+
+            {% if product.purchase_bill %}
+                <a href="{% url 'download_purchase_bill' product.pk %}"
+                   class="btn btn-primary">
+                    ↓ Download Invoice
+                </a>
+            {% else %}
+                <span class="invoice-missing">
+                    No invoice uploaded
+                </span>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

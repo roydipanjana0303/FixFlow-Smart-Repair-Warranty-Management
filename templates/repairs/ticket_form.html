@@ -1,0 +1,150 @@
+ 
+{% extends "base.html" %}
+
+{% block title %}Request Repair | FixFlow{% endblock %}
+
+{% block content %}
+<section class="repair-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">SMART REPAIR SERVICE</span>
+                <h1>Request a Repair 🔧</h1>
+                <p>
+                    Tell us what's wrong with your device.
+                    We'll check the warranty period and
+                    look for an available technician.
+                </p>
+            </div>
+
+            <a href="{% url 'ticket_list' %}"
+               class="btn btn-outline">
+                ← My Repairs
+            </a>
+        </div>
+
+        <div class="repair-form-layout">
+            <div class="repair-form-card">
+
+                {% if not has_products %}
+                    <div class="repair-empty">
+                        <div class="repair-empty-icon">📦</div>
+                        <h2>Register a product first</h2>
+                        <p>
+                            You need a registered product
+                            before submitting a repair request.
+                        </p>
+                        <a href="{% url 'add_product' %}"
+                           class="btn btn-primary">
+                            + Add Product
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="repair-form-heading">
+                        <span class="section-icon">🛠️</span>
+                        <div>
+                            <h2>Repair Request Details</h2>
+                            <p>Complete the fields below.</p>
+                        </div>
+                    </div>
+
+                    <form method="post"
+                          class="repair-request-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="form-errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label for="{{ form.product.id_for_label }}">
+                                Select Product *
+                            </label>
+                            {{ form.product }}
+                            {{ form.product.errors }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.issue_description.id_for_label }}">
+                                Describe the Issue *
+                            </label>
+                            {{ form.issue_description }}
+                            {{ form.issue_description.errors }}
+                            <small>
+                                Describe the problem in at
+                                least 10 characters.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.priority.id_for_label }}">
+                                Repair Priority *
+                            </label>
+                            {{ form.priority }}
+                            {{ form.priority.errors }}
+                        </div>
+
+                        <div class="repair-form-actions">
+                            <a href="{% url 'ticket_list' %}"
+                               class="btn btn-outline">
+                                Cancel
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Submit Repair Request →
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+
+            <aside class="repair-help-card">
+                <div class="repair-help-icon">✨</div>
+                <h3>How FixFlow works</h3>
+
+                <div class="repair-help-step">
+                    <span>1</span>
+                    <div>
+                        <strong>Submit your issue</strong>
+                        <p>Select a device and describe the problem.</p>
+                    </div>
+                </div>
+
+                <div class="repair-help-step">
+                    <span>2</span>
+                    <div>
+                        <strong>Warranty check</strong>
+                        <p>We calculate the registered warranty period.</p>
+                    </div>
+                </div>
+
+                <div class="repair-help-step">
+                    <span>3</span>
+                    <div>
+                        <strong>Technician matching</strong>
+                        <p>We look for a matching available technician.</p>
+                    </div>
+                </div>
+
+                <div class="repair-help-step">
+                    <span>4</span>
+                    <div>
+                        <strong>Track progress</strong>
+                        <p>Follow the ticket's service updates.</p>
+                    </div>
+                </div>
+
+                <p class="repair-disclaimer">
+                    Warranty eligibility is preliminary and
+                    based on dates. It does not guarantee
+                    free repairs or manufacturer coverage.
+                </p>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

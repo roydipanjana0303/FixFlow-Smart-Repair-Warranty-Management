@@ -1,0 +1,134 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Repairs | FixFlow{% endblock %}
+
+{% block content %}
+<section class="repair-page">
+    <div class="container">
+
+        <div class="page-heading">
+            <div>
+                <span class="eyebrow">REPAIR MANAGEMENT</span>
+                <h1>My Repair Tickets 🔧</h1>
+                <p>
+                    View requests, technician assignments,
+                    and service progress.
+                </p>
+            </div>
+
+            <a href="{% url 'create_ticket' %}"
+               class="btn btn-primary">
+                + New Repair Request
+            </a>
+        </div>
+
+        <div class="repair-stats">
+            <div class="repair-stat-card">
+                <span class="repair-stat-icon lavender">📋</span>
+                <div>
+                    <h2>{{ total_tickets }}</h2>
+                    <p>Total Requests</p>
+                </div>
+            </div>
+
+            <div class="repair-stat-card">
+                <span class="repair-stat-icon peach">⏳</span>
+                <div>
+                    <h2>{{ pending_count }}</h2>
+                    <p>Pending</p>
+                </div>
+            </div>
+
+            <div class="repair-stat-card">
+                <span class="repair-stat-icon blue">🔧</span>
+                <div>
+                    <h2>{{ active_count }}</h2>
+                    <p>Assigned / In Progress</p>
+                </div>
+            </div>
+
+            <div class="repair-stat-card">
+                <span class="repair-stat-icon mint">✓</span>
+                <div>
+                    <h2>{{ completed_count }}</h2>
+                    <p>Completed</p>
+                </div>
+            </div>
+        </div>
+
+        {% if tickets %}
+            <div class="repair-ticket-grid">
+                {% for ticket in tickets %}
+                <article class="repair-ticket-card">
+
+                    <div class="repair-ticket-top">
+                        <span class="repair-ticket-icon">🔧</span>
+                        <span class="ticket-status status-{{ ticket.status }}">
+                            {{ ticket.get_status_display }}
+                        </span>
+                    </div>
+
+                    <span class="repair-ticket-number">
+                        TICKET #{{ ticket.id }}
+                    </span>
+
+                    <h3>{{ ticket.product.product_name }}</h3>
+
+                    <p class="repair-ticket-description">
+                        {{ ticket.issue_description|truncatechars:100 }}
+                    </p>
+
+                    <div class="repair-ticket-info">
+                        <div>
+                            <span>Priority</span>
+                            <strong>
+                                {{ ticket.get_priority_display }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Warranty Check</span>
+                            <strong>
+                                {{ ticket.get_warranty_status_display }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Technician</span>
+                            <strong>
+                                {% if ticket.assigned_technician %}
+                                    {{ ticket.assigned_technician.user.get_full_name|default:ticket.assigned_technician.user.username }}
+                                {% else %}
+                                    Awaiting assignment
+                                {% endif %}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'ticket_detail' ticket.pk %}"
+                       class="btn btn-outline btn-full">
+                        Track Repair →
+                    </a>
+                </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="products-empty-state">
+                <div class="products-empty-illustration">🧰</div>
+                <h2>No repair requests yet</h2>
+                <p>
+                    Submit your first request and
+                    track its progress here.
+                </p>
+
+                <a href="{% url 'create_ticket' %}"
+                   class="btn btn-primary btn-large">
+                    + Submit Your First Repair
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
